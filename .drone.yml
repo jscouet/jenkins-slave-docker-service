@@ -4,7 +4,7 @@ pipeline:
     repo: jsoude/jenkins-slave
     secrets: [ docker_username, docker_password ]
     tags:
-      - latest
+      - 3.19
  
   slack:
     image: plugins/slack
