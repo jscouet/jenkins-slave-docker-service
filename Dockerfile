@@ -1,20 +1,15 @@
-FROM openjdk:8-jdk-alpine 
-MAINTAINER Jeremy soude  jsoude@tuta.io
-ENV HOME /home/jenkins 
-RUN addgroup -S -g 10000 jenkins
-RUN adduser -S -u 10000 -h $HOME -G jenkins jenkins
-LABEL Description="This is a base image, which provides the Jenkins agent executable (slave.jar)" Vendor="Jenkins project" Version="3.19"
-ARG VERSION=3.19 
-ARG AGENT_WORKDIR=/home/jenkins/agent 
-RUN apk add --update --no-cache curl bash git openssh-client openssl \
-  && curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
-  && chmod 755 /usr/share/jenkins \
-  && chmod 644 /usr/share/jenkins/slave.jar \
-  && apk del curl
-USER jenkins 
-ENV AGENT_WORKDIR=${AGENT_WORKDIR} 
-RUN mkdir /home/jenkins/.jenkins && mkdir -p ${AGENT_WORKDIR}
-VOLUME /home/jenkins/.jenkins
-VOLUME ${AGENT_WORKDIR}
-WORKDIR /home/jenkins
+FROM jenkins/jnlp-slave:3.19-1
+MAINTAINER Jeremy Soude <jsoude@tuta.io>
+LABEL Description="Jenkins slave with tools" Vendor="jsoude" Version="3.19"
 
+ARG VERSION=3.19-1
+ARG COMPOSE_VERSION=1.20.1
+
+USER root
+RUN apt-get update
+RUN apt-get install -y ansible
+RUN curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
+USER jenkins
+
+# docker run  --rm  --network service --name=slave-service --hostname=slave-service jsoude/jenkins-jnlp-slave -url https://jenkins.${MYDOMAIN}:443  -workDir=/home/jenkins/agent {{ jenkins_code }}  service

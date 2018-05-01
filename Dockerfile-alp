@@ -1,0 +1,20 @@
+FROM jenkins/jnlp-slave
+MAINTAINER Jeremy Soude <jsoude@tuta.io>
+LABEL Description="Jenkins slave with tools" Vendor="jsoude" Version="3.19"
+#COPY jenkins-slave /usr/local/bin/jenkins-slave
+
+USER root
+#RUN apk add --update --no-cache docker  ansible
+
+#RUN apt-get update
+#RUN apt-get install -y apt-transport-https
+#RUN echo 'deb https://download.docker.com/linux/debian stretch stable' >> /etc/apt/sources.list
+#RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+RUN apt-get update
+RUN apt-get install -y ansible
+RUN curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
+#RUN apk add --update --no-cache curl docker ansible
+#RUN curl -L https://github.com/docker/compose/releases/download/1.21.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+USER jenkins
+#ENTRYPOINT ["jenkins-slave"]
