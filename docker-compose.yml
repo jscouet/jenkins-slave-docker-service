@@ -1,0 +1,23 @@
+version: "2.3"
+
+services:
+  slave-service:
+    image: jsoude/jenkins-jnlp-slave
+    restart: unless-stopped
+    container_name: slave-service
+    volumes:
+      - slave-data:/home/jenkins/agent
+    command: -url ${JENKINS_MASTER}  -workDir=/home/jenkins/agent ${SECRET_SLAVE_SERVICE}  slave-service
+    networks:
+      - service
+
+volumes:
+  slave-data:
+    driver: nfs
+    driver_opts:
+      share: 172.17.0.1/srv/data/volumes/slave-data
+
+networks:
+  service:
+    external:
+      name: service
